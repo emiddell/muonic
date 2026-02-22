@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "muonic"
+version = "3.0.0"
+description = "Software to work with QNet DAQ cards. This is a TRUNK version"
+readme = "README.md"
+license = {text = "GPLv3"}
+authors = [
+    {name = "Robert Franke", email = "robert.franke@desy.de"},
+    {name = "Achim Stoessl", email = "achim.stoessl@desy.de"},
+    {name = "Basho Kaminsky", email = "basho.kaminsky@desy.de"},
+    {name = "Martin Ohmann", email = "martin@mohmann.de"},
+    {name = "Hans-Peter Bretz", email = "hans-peter.bretz@desy.de"},
+]
+keywords = ["QNET", "QuarkNET", "Fermilab", "DESY", "DAQ"]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "pyserial",
+    "scipy",
+]
+
+[project.urls]
+Homepage = "https://github.com/CosmicLabDESY/muonic/"
+Download = "https://github.com/CosmicLabDESY/muonic/archive/release2.zip"
+
+[tool.setuptools]
+packages = ["muonic", "muonic.analysis", "muonic.daq", "muonic.gui", "muonic.util"]
+script-files = ["bin/muonic", "bin/which_tty_daq"]
+
+[tool.setuptools.package-data]
+muonic = [
+    "daq/simdaq.txt",
+    "gui/daq_commands_help.txt",
+    "gui/muonic.xpm",
+]

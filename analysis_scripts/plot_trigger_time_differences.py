@@ -3,7 +3,7 @@
 Script for creating a histogram of the time difference between two triggers
 Usage python plot_trigger_time_differences.py PULSEFILE
 """
-from __future__ import print_function
+
 import sys
 
 import matplotlib.pylab as p

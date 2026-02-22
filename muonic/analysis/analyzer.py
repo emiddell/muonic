@@ -3,7 +3,7 @@ Get the absolute timing of the pulses by use of the gps time
 Calculate also a non hex representation of leading and falling
 edges of the pulses.
 """
-from __future__ import print_function
+
 import datetime
 import os
 import time

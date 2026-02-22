@@ -3,11 +3,9 @@ Provides helper classes and function needed by the gui
 """
 from matplotlib.pylab import rc
 
-from PyQt4 import QtGui
-from PyQt4 import QtCore
+from PyQt6 import QtGui, QtCore, QtWidgets
 
-
-class HistoryAwareLineEdit(QtGui.QLineEdit):
+class HistoryAwareLineEdit(QtWidgets.QLineEdit):
     """
     A LineEdit widget that is aware of its input history. The history can be
     cycled by pressing arrow up and arrow down.
@@ -15,7 +13,7 @@ class HistoryAwareLineEdit(QtGui.QLineEdit):
     :param args: widget args
     """
     def __init__(self, *args):
-        QtGui.QLineEdit.__init__(self, *args)
+        QtWidgets.QLineEdit.__init__(self, *args)
         self.history = []
         self.hist_pointer = 0
         
@@ -26,7 +24,7 @@ class HistoryAwareLineEdit(QtGui.QLineEdit):
         :param event: event object
         :returns: bool
         """
-        if event.type() == QtCore.QEvent.KeyPress:
+        if event.type() == QtCore.QEvent.Type.KeyPress:
             if event.key() == QtCore.Qt.Key_Down:
                 self.emit(QtCore.SIGNAL("keyDownPressed"))
                 if self.hist_pointer < len(self.history) - 1:
@@ -43,8 +41,8 @@ class HistoryAwareLineEdit(QtGui.QLineEdit):
                     self.setText(self.history[self.hist_pointer])
                 return True
             else:
-                return QtGui.QLineEdit.event(self, event)
-        return QtGui.QLineEdit.event(self, event)
+                return QtWidgets.QLineEdit.event(self, event)
+        return QtWidgets.QLineEdit.event(self, event)
 
     def add_hist_item(self, item):
         """
@@ -66,13 +64,7 @@ def set_large_plot_style():
     """
     font_size = 20
     
-    # workaround for ancient versions of matplotlib at DESY
-    from matplotlib import __version__ as mplversion
-    from distutils.version import LooseVersion
-    if LooseVersion(mplversion) > LooseVersion("1.3.0"):
-        ff = "TeX Gyre Pagella" 
-    else:
-        ff = 'serif'
+    ff = "sans"
 
     rc("axes", titlesize=font_size, labelsize=font_size)
     # rc("font", serif="Palatino")
@@ -82,7 +74,6 @@ def set_large_plot_style():
     rc("lines", linewidth=2, markersize=10)
     rc("ps", useafm=True)
     rc("pdf", use14corefonts=True)
-    rc("text", usetex=True)
     rc("xtick", labelsize=font_size)
     rc("xtick.major", size=7)
     rc("xtick.minor", size=5)

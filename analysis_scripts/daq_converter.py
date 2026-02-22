@@ -6,7 +6,7 @@
 # -> each channel is represented by a list of leading/falling edge
 #    tuples of the recorded pulses
 #
-from __future__ import print_function
+
 import logging
 import re
 import sys

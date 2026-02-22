@@ -2,9 +2,8 @@
 Provides DAQ server and connection classes to interface with the serial port.
 """
 
-from __future__ import print_function
+
 import abc
-from future.utils import with_metaclass
 import logging
 import os
 import queue
@@ -21,7 +20,7 @@ except ImportError:
 from muonic.daq import DAQMissingDependencyError
 
 
-class BaseDAQConnection(with_metaclass(abc.ABCMeta, object)):
+class BaseDAQConnection(abc.ABC):
     """
     Base DAQ Connection class.
 
@@ -58,7 +57,7 @@ class BaseDAQConnection(with_metaclass(abc.ABCMeta, object)):
 
         def get_dev_path(script):
             tty = subprocess.Popen(
-                    [script], stdout=subprocess.PIPE).communicate()[0]
+                    [script], stdout=subprocess.PIPE, text=True).communicate()[0]
             return "/dev/%s" % tty.rstrip('\n')
 
         while not connected:

@@ -4,7 +4,6 @@ Calculating the fraction of upgoing events
 CAUTION: Assuming chan0 is the uppermost and
          chan1 is below chan0
 """
-from __future__ import print_function
 import sys
 
 

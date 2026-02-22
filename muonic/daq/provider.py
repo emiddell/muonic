@@ -2,13 +2,13 @@
 Provides the public interfaces to read from and send to a DAQ card
 """
 
-from __future__ import print_function
+
 import abc
-from future.utils import with_metaclass
 import logging
 import multiprocessing as mp
 import re
 import queue
+import threading
 
 try:
     import zmq
@@ -20,7 +20,7 @@ from muonic.daq import DAQIOError, DAQMissingDependencyError
 from muonic.daq import DAQSimulationConnection, DAQConnection
 
 
-class BaseDAQProvider(with_metaclass(abc.ABCMeta, object)):
+class BaseDAQProvider(abc.ABC):
     """
     Base class defining the public API and helpers for the
     DAQ provider implementations
@@ -110,13 +110,13 @@ class DAQProvider(BaseDAQProvider):
         # Set up the thread to do asynchronous I/O. More can be made if
         # necessary. Set daemon flag so that the threads finish when the main
         # app finishes
-        self.read_thread = mp.Process(target=self.daq.read, name="pREADER")
+        self.read_thread = threading.Thread(target=self.daq.read, name="pREADER")
         self.read_thread.daemon = True
         self.read_thread.start()
 
         if not sim:
-            self.write_thread = mp.Process(target=self.daq.write,
-                                           name="pWRITER")
+            self.write_thread = threading.Thread(target=self.daq.write,
+                                                 name="pWRITER")
             self.write_thread.daemon = True
             self.write_thread.start()
         

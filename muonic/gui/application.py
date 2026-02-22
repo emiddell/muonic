@@ -7,8 +7,7 @@ import datetime
 import time
 import webbrowser
 
-from PyQt4 import QtGui
-from PyQt4 import QtCore
+from PyQt6 import QtGui, QtCore, QtWidgets
 
 from muonic import __version__, __source_location__
 from muonic import __docs_hosted_at__, __manual_hosted_at__
@@ -25,7 +24,7 @@ from muonic.util import apply_default_settings, get_muonic_filename
 from muonic.util import get_data_directory
 
 
-class Application(QtGui.QMainWindow):
+class Application(QtWidgets.QMainWindow):
     """
     The main application
 
@@ -37,7 +36,7 @@ class Application(QtGui.QMainWindow):
     :type opts: Namespace
     """
     def __init__(self, daq, logger, opts):
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
 
         # start time of the application
         self.start_time = datetime.datetime.utcnow()
@@ -56,13 +55,13 @@ class Application(QtGui.QMainWindow):
         self.opts = opts
 
         # tab widget to hold the different physics widgets
-        self.tab_widget = QtGui.QTabWidget(self)
+        self.tab_widget = QtWidgets.QTabWidget(self)
 
         # widget store for the tab widgets to reference later
         self._widgets = dict()
 
         # setup status bar
-        self.status_bar = QtGui.QMainWindow.statusBar(self)
+        self.status_bar = QtWidgets.QMainWindow.statusBar(self)
 
         # last daq message
         self.last_daq_msg = False
@@ -126,15 +125,11 @@ class Application(QtGui.QMainWindow):
         # timer to periodically call processIncoming and check
         # what is in the queue
         self.timer = QtCore.QTimer()
-        QtCore.QObject.connect(self.timer,
-                               QtCore.SIGNAL("timeout()"),
-                               self.process_incoming)
+        self.timer.timeout.connect(self.process_incoming)
 
         # time update widgets the have dynamic plots in them
         self.widget_updater = QtCore.QTimer()
-        QtCore.QObject.connect(self.widget_updater,
-                               QtCore.SIGNAL("timeout()"),
-                               self.update_dynamic)
+        self.widget_updater.timeout.connect(self.update_dynamic)
 
         self.logger.info("Time window is %4.2f" % opts.time_window)
 
@@ -144,7 +139,7 @@ class Application(QtGui.QMainWindow):
 
         # start update timers
         self.timer.start(1000)
-        self.widget_updater.start(opts.time_window * 1000)
+        self.widget_updater.start(int(opts.time_window * 1000))
 
     def get_configuration_from_daq_card(self):
         """
@@ -223,9 +218,8 @@ class Application(QtGui.QMainWindow):
 
         :returns: None
         """
-        desktop = QtGui.QDesktopWidget()
-        screen_size = QtCore.QRectF(desktop.screenGeometry(
-                desktop.primaryScreen()))
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_size = screen.geometry()
         screen_x = screen_size.x() + screen_size.width()
         screen_y = screen_size.y() + screen_size.height()
 
@@ -251,8 +245,7 @@ class Application(QtGui.QMainWindow):
         muonic_data_action = QtGui.QAction('Open Data Folder', self)
         muonic_data_action.setStatusTip('Open the folder with the data files written by muonic.')
         muonic_data_action.setShortcut('Ctrl+O')
-        self.connect(muonic_data_action, QtCore.SIGNAL('triggered()'),
-                     self.open_muonic_data)
+        muonic_data_action.triggered.connect(self.open_muonic_data)
 
         file_menu.addAction(muonic_data_action)
 
@@ -260,8 +253,7 @@ class Application(QtGui.QMainWindow):
                 "/usr/share/icons/gnome/24x24/actions/exit.png"), 'Exit', self)
         exit_action.setShortcut('Ctrl+Q')
         exit_action.setStatusTip('Exit application')
-        self.connect(exit_action, QtCore.SIGNAL('triggered()'),
-                     QtCore.SLOT('close()'))
+        exit_action.triggered.connect(self.close)
 
         file_menu.addAction(exit_action)
 
@@ -270,18 +262,15 @@ class Application(QtGui.QMainWindow):
 
         config_action = QtGui.QAction('Channel Configuration', self)
         config_action.setStatusTip('Configure the Coincidences and channels')
-        self.connect(config_action, QtCore.SIGNAL('triggered()'),
-                     self.config_menu)
+        config_action.triggered.connect(self.config_menu)
 
         thresholds_action = QtGui.QAction('Thresholds', self)
         thresholds_action.setStatusTip('Set trigger thresholds')
-        self.connect(thresholds_action, QtCore.SIGNAL('triggered()'),
-                     self.threshold_menu)
+        thresholds_action.triggered.connect(self.threshold_menu)
 
         advanced_action = QtGui.QAction('Advanced Configurations', self)
         advanced_action.setStatusTip('Advanced configurations')
-        self.connect(advanced_action, QtCore.SIGNAL('triggered()'),
-                     self.advanced_menu)
+        advanced_action.triggered.connect(self.advanced_menu)
 
         distances_action = QtGui.QAction('Distances', self)
         distances_action.setStatusTip('Set trigger distances')
@@ -297,21 +286,17 @@ class Application(QtGui.QMainWindow):
         help_menu = menu_bar.addMenu('&Help')
 
         manualdoc_action = QtGui.QAction('Website with Manual', self)
-        self.connect(manualdoc_action, QtCore.SIGNAL('triggered()'),
-                     self.manualdoc_menu)
+        manualdoc_action.triggered.connect(self.manualdoc_menu)
 
         sphinxdoc_action = QtGui.QAction('Technical documentation', self)
-        self.connect(sphinxdoc_action, QtCore.SIGNAL('triggered()'),
-                     self.sphinxdoc_menu)
+        sphinxdoc_action.triggered.connect(self.sphinxdoc_menu)
 
         commands_action = QtGui.QAction('DAQ Commands', self)
         commands_action.setShortcut('F1')
-        self.connect(commands_action, QtCore.SIGNAL('triggered()'),
-                     self.help_menu)
+        commands_action.triggered.connect(self.help_menu)
 
         about_action = QtGui.QAction('About muonic', self)
-        self.connect(about_action, QtCore.SIGNAL('triggered()'),
-                     self.about_menu)
+        about_action.triggered.connect(self.about_menu)
 
         help_menu.addAction(manualdoc_action)
         help_menu.addAction(commands_action)
@@ -323,7 +308,7 @@ class Application(QtGui.QMainWindow):
         Adds widget to the store.
 
         Raises WidgetWithNameExistsError if a widget of that name already
-        exists and TypeError if widget is no subclass of QtGui.QWidget.
+        exists and TypeError if widget is no subclass of QtWidgets.QWidget.
 
         :param name: widget name
         :type name: str
@@ -341,8 +326,8 @@ class Application(QtGui.QMainWindow):
             raise WidgetWithNameExistsError(
                     "widget with name '%s' already exists" % name)
         else:
-            if not isinstance(widget, QtGui.QWidget):
-                raise TypeError("widget has to be a subclass 'QtGui.QWidget'")
+            if not isinstance(widget, QtWidgets.QWidget):
+                raise TypeError("widget has to be a subclass 'QtWidgets.QWidget'")
             else:
                 self.tab_widget.addTab(widget, label)
                 self._widgets[name] = widget
@@ -398,7 +383,7 @@ class Application(QtGui.QMainWindow):
         # show dialog
         dialog = ThresholdDialog(thresholds)
 
-        if dialog.exec_() == 1:
+        if dialog.exec() == 1:
             commands = []
 
             # update thresholds config
@@ -482,7 +467,7 @@ class Application(QtGui.QMainWindow):
         dialog = ConfigDialog(channel_config, coincidence_config,
                               veto, veto_config)
 
-        if dialog.exec_() == 1:
+        if dialog.exec() == 1:
 
             # get and update channel and coincidence config
             for i in range(4):
@@ -585,7 +570,7 @@ class Application(QtGui.QMainWindow):
                                 get_setting("time_window"),
                                 get_setting("write_daq_status"))
 
-        if dialog.exec_() == 1:
+        if dialog.exec() == 1:
             # update time window
             time_window = float(dialog.get_widget_value("time_window"))
 
@@ -630,7 +615,7 @@ class Application(QtGui.QMainWindow):
 
         :returns: None
         """
-        HelpDialog().exec_()
+        HelpDialog().exec()
         
     def about_menu(self):
         """
@@ -638,7 +623,7 @@ class Application(QtGui.QMainWindow):
 
         :returns: None
         """
-        QtGui.QMessageBox.information(self, "about muonic",
+        QtWidgets.QMessageBox.information(self, "about muonic",
                                       "version: %s\n source located at: %s" %
                                       (__version__, __source_location__))
 
@@ -933,12 +918,12 @@ class Application(QtGui.QMainWindow):
         self.logger.info("Attempting to close application")
 
         # ask kindly if the user is really sure if she/he wants to exit
-        reply = QtGui.QMessageBox.question(self, "Attention!",
+        reply = QtWidgets.QMessageBox.question(self, "Attention!",
                                            "Do you really want to exit?",
-                                           QtGui.QMessageBox.Yes |
-                                           QtGui.QMessageBox.No)
+                                           QtWidgets.QMessageBox.StandardButton.Yes |
+                                           QtWidgets.QMessageBox.StandardButton.No)
 
-        if reply == QtGui.QMessageBox.Yes:
+        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
             self.timer.stop()
             self.widget_updater.stop()
 

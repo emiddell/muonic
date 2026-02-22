@@ -22,13 +22,13 @@
 # Adapted by Boudewijn Rempt, Netherlands. 2002-04-15
 # It is licenced under the Python licence, http://www.python.org/psf/license/
 
-from __future__ import print_function
+
 from argparse import ArgumentParser, RawTextHelpFormatter
 import logging
 import signal
 import sys
 
-from PyQt4 import QtGui
+from PyQt6 import QtGui, QtWidgets
 
 from muonic import __version__, DATA_PATH
 from muonic.daq import DAQClient, DAQProvider
@@ -46,7 +46,7 @@ def main(args, logger):
     set_data_directory(args.data_path)
     setup_data_directory(args.data_path)
 
-    root = QtGui.QApplication(sys.argv)
+    root = QtWidgets.QApplication(sys.argv)
     root.setQuitOnLastWindowClosed(True)
 
     if args.port is not None:
@@ -57,7 +57,7 @@ def main(args, logger):
     # Set up the GUI part
     gui = Application(daq, logger, args)
     gui.show()
-    root.exec_()
+    root.exec()
 
 if __name__ == '__main__':
     # handle ctrl+c

@@ -1,9 +1,8 @@
 """
 Provides a simple DAQ card simulation, so that software can be tested.
 """
-from __future__ import print_function
+
 import abc
-from future.utils import with_metaclass
 import logging
 import numpy as np
 from os import path
@@ -57,7 +56,7 @@ class DAQSimulation(object):
 
         :returns: None
         """
-        if isinstance(self._daq, file) and not self._daq.closed:
+        if self._daq and not self._daq.closed:
             self._daq.close()
 
     def _physics(self):
@@ -146,7 +145,7 @@ class DAQSimulation(object):
             return False
 
 
-class BaseDAQSimulationConnection(with_metaclass(abc.ABCMeta, object)):
+class BaseDAQSimulationConnection(abc.ABC):
     """
     Base class for a simulated connection to DAQ card.
 

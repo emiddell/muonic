@@ -4,10 +4,10 @@ Provide the dialog fields for user interaction
 
 from os import path
 
-from PyQt4 import QtCore, QtGui
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class BaseDialog(QtGui.QDialog):
+class BaseDialog(QtWidgets.QDialog):
     """
     Abstract base class for all dialogs
 
@@ -17,7 +17,7 @@ class BaseDialog(QtGui.QDialog):
     DEFAULT_ITEM_LABELS = ["Chan0", "Chan1", "Chan2", "Chan3"]
     
     def __init__(self, window_title):
-        QtGui.QDialog.__init__(self)
+        QtWidgets.QDialog.__init__(self)
         self.setWindowTitle(window_title)
         self.setModal(True)
 
@@ -29,17 +29,17 @@ class BaseDialog(QtGui.QDialog):
         :type: str
         :return: mixed
         """
-        widget = self.findChild(QtGui.QWidget, object_name)
+        widget = self.findChild(QtWidgets.QWidget, object_name)
 
         if widget is not None:
-            if (isinstance(widget, QtGui.QRadioButton) or
-                    isinstance(widget, QtGui.QCheckBox) or
-                    isinstance(widget, QtGui.QGroupBox)):
+            if (isinstance(widget, QtWidgets.QRadioButton) or
+                    isinstance(widget, QtWidgets.QCheckBox) or
+                    isinstance(widget, QtWidgets.QGroupBox)):
                 return widget.isChecked()
-            elif (isinstance(widget, QtGui.QSpinBox) or
-                    isinstance(widget, QtGui.QDoubleSpinBox)):
+            elif (isinstance(widget, QtWidgets.QSpinBox) or
+                    isinstance(widget, QtWidgets.QDoubleSpinBox)):
                 return widget.value()
-            elif isinstance(widget, QtGui.QLineEdit):
+            elif isinstance(widget, QtWidgets.QLineEdit):
                 return widget.text()
         return None
     
@@ -52,14 +52,16 @@ class BaseDialog(QtGui.QDialog):
         :param top: top offset
         :type top: int
         """
-        box = QtGui.QDialogButtonBox(self)
+        box = QtWidgets.QDialogButtonBox(self)
         box.setGeometry(QtCore.QRect(left, top, 300, 32))
-        box.setOrientation(QtCore.Qt.Horizontal)
-        box.setStandardButtons(QtGui.QDialogButtonBox.Cancel |
-                               QtGui.QDialogButtonBox.Ok)
+        box.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        box.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                               QtWidgets.QDialogButtonBox.StandardButton.Ok)
 
-        QtCore.QObject.connect(box, QtCore.SIGNAL('accepted()'), self.accept)
-        QtCore.QObject.connect(box, QtCore.SIGNAL('rejected()'), self.reject)
+        #QtCore.QObject.connect(box, QtCore.SIGNAL('accepted()'), self.accept)
+        #QtCore.QObject.connect(box, QtCore.SIGNAL('rejected()'), self.reject)
+        box.accepted.connect(self.accept)
+        box.rejected.connect(self.reject)
 
         return box
 
@@ -91,11 +93,11 @@ class BaseDialog(QtGui.QDialog):
         if item_labels is None:
             item_labels = self.DEFAULT_ITEM_LABELS
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
         layout.addStretch(1)
 
-        group_box = QtGui.QGroupBox(label)
+        group_box = QtWidgets.QGroupBox(label)
         group_box.setCheckable(checkable)
         group_box.setChecked(checked)
         group_box.setObjectName(object_name)
@@ -103,9 +105,9 @@ class BaseDialog(QtGui.QDialog):
 
         for index, label in enumerate(item_labels):
             if radio:
-                check_box = QtGui.QRadioButton(self)
+                check_box = QtWidgets.QRadioButton(self)
             else:
-                check_box = QtGui.QCheckBox(self)
+                check_box = QtWidgets.QCheckBox(self)
             check_box.setGeometry(QtCore.QRect(left, 40 + index * 40, 119, 28))
             check_box.setObjectName("%s_%d" % (object_name, index))
             check_box.setText(label)
@@ -126,7 +128,7 @@ class DecayConfigDialog(BaseDialog):
     def __init__(self):
         BaseDialog.__init__(self, "Muon Decay Configuration")
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
         layout.addWidget(self.choice_group(radio=True, label="Single Pulse",
                                            object_name="single_checkbox",
@@ -139,7 +141,7 @@ class DecayConfigDialog(BaseDialog):
                                            object_name="veto_checkbox",
                                            checked_items=[3], left=300), 0, 2)
 
-        min_time_spinbox = QtGui.QSpinBox()
+        min_time_spinbox = QtWidgets.QSpinBox()
         min_time_spinbox.setObjectName("min_pulse_time")
         min_time_spinbox.setMaximum(2000)
         min_time_spinbox.setValue(400)
@@ -147,16 +149,16 @@ class DecayConfigDialog(BaseDialog):
                                     "are too close together")
 
         layout.addWidget(min_time_spinbox, 2, 0)
-        layout.addWidget(QtGui.QLabel("Minimum time between\n" +
+        layout.addWidget(QtWidgets.QLabel("Minimum time between\n" +
                                       "two pulses (in ns)"), 2, 1)
 
-        pulse_width_group_box = QtGui.QGroupBox("Set conditions on " +
+        pulse_width_group_box = QtWidgets.QGroupBox("Set conditions on " +
                                                 "pulse width")
         pulse_width_group_box.setCheckable(True)
         pulse_width_group_box.setChecked(False)
         pulse_width_group_box.setObjectName("set_pulse_width_conditions")
 
-        pulse_width_layout = QtGui.QGridLayout(pulse_width_group_box)
+        pulse_width_layout = QtWidgets.QGridLayout(pulse_width_group_box)
 
         pulse_width_items = [
             {
@@ -183,14 +185,14 @@ class DecayConfigDialog(BaseDialog):
         ]
 
         for i, item in enumerate(pulse_width_items):
-            spinbox = QtGui.QSpinBox()
+            spinbox = QtWidgets.QSpinBox()
             spinbox.setObjectName(item['object_name'])
             spinbox.setSuffix(' ns')
             spinbox.setValue(item['value'])
             spinbox.setToolTip(item['tooltip'])
             spinbox.setMaximum(11000)
             pulse_width_layout.addWidget(spinbox, i, 0)
-            pulse_width_layout.addWidget(QtGui.QLabel(item['label']), i, 1)
+            pulse_width_layout.addWidget(QtWidgets.QLabel(item['label']), i, 1)
 
         layout.addWidget(pulse_width_group_box, 3, 0, 1, 3)
         layout.addWidget(self.button_box(left=200), 4, 2)
@@ -213,9 +215,9 @@ class FitRangeConfigDialog(BaseDialog):
     def __init__(self, upper_lim=None, lower_lim=None, dimension=''):
         BaseDialog.__init__(self, "Fit Range Configuration")
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        lower = QtGui.QDoubleSpinBox()
+        lower = QtWidgets.QDoubleSpinBox()
         lower.setDecimals(2)
         lower.setSingleStep(0.01)
         lower.setObjectName("lower_limit")
@@ -226,10 +228,10 @@ class FitRangeConfigDialog(BaseDialog):
             lower.setMaximum(lower_lim[1])
             lower.setValue(lower_lim[2])
 
-        layout.addWidget(QtGui.QLabel("Lower limit for the fit range: "), 0, 0)
+        layout.addWidget(QtWidgets.QLabel("Lower limit for the fit range: "), 0, 0)
         layout.addWidget(lower, 0, 1)
 
-        upper = QtGui.QDoubleSpinBox()
+        upper = QtWidgets.QDoubleSpinBox()
         upper.setDecimals(2)
         upper.setSingleStep(0.01)
         upper.setObjectName("upper_limit")
@@ -240,7 +242,7 @@ class FitRangeConfigDialog(BaseDialog):
             upper.setMaximum(upper_lim[1])
             upper.setValue(upper_lim[2])
 
-        layout.addWidget(QtGui.QLabel("Upper limit for the fit range: "), 1, 0)
+        layout.addWidget(QtWidgets.QLabel("Upper limit for the fit range: "), 1, 0)
         layout.addWidget(upper, 1, 1)
         layout.addWidget(self.button_box(left=200), 2, 0, 2, 0)
 
@@ -255,7 +257,7 @@ class VelocityConfigDialog(BaseDialog):
     def __init__(self):
         BaseDialog.__init__(self, "Muon Velocity Configuration")
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
         layout.addWidget(self.choice_group(radio=True, label="Upper Channel",
                                            object_name="upper_checkbox",
                                            checked_items=[0], left=20), 0, 0)
@@ -278,15 +280,15 @@ class ThresholdDialog(BaseDialog):
     def __init__(self, thresholds):
         BaseDialog.__init__(self, "Thresholds")
 
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
 
         for channel, threshold in enumerate(thresholds):
-            spinbox = QtGui.QSpinBox()
+            spinbox = QtWidgets.QSpinBox()
             spinbox.setMaximum(1000)
             spinbox.setObjectName("threshold_ch_%d" % channel)
             spinbox.setValue(int(threshold))
             spinbox.setSuffix(' mV')
-            layout.addWidget(QtGui.QLabel("Channel %d" % channel))
+            layout.addWidget(QtWidgets.QLabel("Channel %d" % channel))
             layout.addWidget(spinbox)
                         
         layout.addWidget(self.button_box(left=0))
@@ -360,7 +362,7 @@ class ConfigDialog(BaseDialog):
             if checked:
                 checked_channel_vetos.append(_veto)
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
         layout.addWidget(
                 self.choice_group(label="Select Channel",
                                   object_name="channel_checkbox",
@@ -403,23 +405,23 @@ class AdvancedDialog(BaseDialog):
                  write_daq_status=False):
         BaseDialog.__init__(self, "Advanced Configurations")
 
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
-        gate_width_box = QtGui.QSpinBox()
+        gate_width_box = QtWidgets.QSpinBox()
         gate_width_box.setSuffix(' ns')
         gate_width_box.setObjectName("gate_width")
         gate_width_box.setMaximum(159990)
         gate_width_box.setSingleStep(10)
         gate_width_box.setMinimum(10)
-        gate_width_box.setValue(gate_width)
+        gate_width_box.setValue(int(gate_width))
         gate_width_box.setToolTip("Define a gate width, which is the " +
                                   "time window opened by a trigger")
 
-        layout.addWidget(QtGui.QLabel("Gate width time window " +
+        layout.addWidget(QtWidgets.QLabel("Gate width time window " +
                                       "(default: 100 ns): "), 0, 0)
         layout.addWidget(gate_width_box, 0, 1)
 
-        time_window_box = QtGui.QDoubleSpinBox()
+        time_window_box = QtWidgets.QDoubleSpinBox()
         time_window_box.setDecimals(1)
         time_window_box.setSingleStep(0.1)
         time_window_box.setSuffix(' s')
@@ -430,17 +432,17 @@ class AdvancedDialog(BaseDialog):
         time_window_box.setToolTip("Define an interval for calculating " +
                                    "and refreshing the rates.")
 
-        layout.addWidget(QtGui.QLabel("Readout Interval " +
+        layout.addWidget(QtWidgets.QLabel("Readout Interval " +
                                       "(default: 5 s): "), 1, 0)
         layout.addWidget(time_window_box, 1, 1)
 
-        write_status_checkbox = QtGui.QCheckBox()
+        write_status_checkbox = QtWidgets.QCheckBox()
         write_status_checkbox.setObjectName("write_daq_status")
         write_status_checkbox.setChecked(write_daq_status)
         write_status_checkbox.setToolTip("Write DAQ status lines to RAW " +
                                          "file, same as option -n.")
 
-        layout.addWidget(QtGui.QLabel("Write DAQ status lines to RAW file: "),
+        layout.addWidget(QtWidgets.QLabel("Write DAQ status lines to RAW file: "),
                          2, 0)
         layout.addWidget(write_status_checkbox, 2, 1)
         layout.addWidget(self.button_box(left=30, top=300), 3, 0, 1, 2)
@@ -462,14 +464,15 @@ class HelpDialog(BaseDialog):
         with open(help_file, 'r') as f:
             help_text = f.read()
 
-        text_box = QtGui.QPlainTextEdit(help_text)
+        text_box = QtWidgets.QPlainTextEdit(help_text)
         text_box.setReadOnly(True)
 
-        button_box = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
-        QtCore.QObject.connect(button_box, QtCore.SIGNAL('accepted()'),
-                               self.accept)
+        button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        #QtCore.QObject.connect(button_box, QtCore.SIGNAL('accepted()'),
+        #                       self.accept)
+        self.button_box.accepted.connect(self.accept)
 
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(text_box)
         layout.addWidget(button_box)
 
@@ -478,10 +481,10 @@ class HelpDialog(BaseDialog):
 if __name__ == "__main__":
     import sys
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     config_dialog = ConfigDialog()
     decay_dialog = DecayConfigDialog()
     threshold_dialog = ThresholdDialog([42, 42, 42, 42])
     distance_dialog = DistanceDialog([42, 42, 42, 42])
     velocity_dialog = VelocityConfigDialog()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

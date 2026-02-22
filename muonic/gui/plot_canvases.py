@@ -3,14 +3,15 @@ Provides the canvases for plots in muonic
 """
 from matplotlib.figure import Figure
 from muonic.util import get_setting
-from matplotlib.backends.backend_qt4agg \
-    import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 try:
-    from matplotlib.backends.backend_qt4agg \
-        import NavigationToolbar2QTAgg as NavigationToolbar
+    from matplotlib.backends.backend_qtagg import (
+        NavigationToolbar2QTAgg as NavigationToolbar,
+    )
 except ImportError:
-    from matplotlib.backends.backend_qt4agg \
-        import NavigationToolbar2QT as NavigationToolbar
+    from matplotlib.backends.backend_qtagg import (
+        NavigationToolbar2QT as NavigationToolbar,
+    )
 
 import numpy as np
 
@@ -182,7 +183,8 @@ class BaseHistogramCanvas(BasePlotCanvas):
 
         # we now have to pass our new patches
         # to the figure we created..
-        self.ax.patches = self.hist_patches
+        for patch in self.hist_patches:
+            self.ax.add_patch(patch)
         self.fig.canvas.draw()
 
     def show_fit(self, bin_centers, bincontent, fitx, decay, p, covar,

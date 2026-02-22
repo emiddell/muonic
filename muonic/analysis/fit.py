@@ -2,7 +2,7 @@
 Script for performing a fit to a histogramm of recorded 
 time differences for the use with QNet
 """
-from __future__ import print_function
+
 import sys
 
 from matplotlib import pylab

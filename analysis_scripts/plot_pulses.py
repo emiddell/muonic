@@ -3,7 +3,7 @@
 Script for histograming the pulseswidth
 Usage python plot_pulses.py PULSEFILE
 """
-from __future__ import print_function
+
 import sys
 
 import matplotlib.pylab as p
