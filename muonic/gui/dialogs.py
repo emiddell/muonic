@@ -470,7 +470,7 @@ class HelpDialog(BaseDialog):
         button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok)
         #QtCore.QObject.connect(button_box, QtCore.SIGNAL('accepted()'),
         #                       self.accept)
-        self.button_box.accepted.connect(self.accept)
+        button_box.accepted.connect(self.accept)
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(text_box)
