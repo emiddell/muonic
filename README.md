@@ -9,7 +9,23 @@ Muonic is distributed under the terms of GPL (GNU Public License). With the use 
 
 The Muonic logo is provided with a big thanks from The Particle Zoo http://www.particlezoo.net./
 
-## muonic setup and installation
+## preparing your computer to connect to the DAQ card
+
+### Linux
+
+The DAQ card uses a serial connection via the USB port. If muonic does not find the DAQ card even though it is connected to the computer, try adding the user that you use for login to the group dialout:
+
+`sudo adduser username dialout`.
+
+### Windows
+
+You might need to install the [CP210x USB to UART Bridge VCP Drivers](https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads).
+
+## muonic setup 
+
+Download the release tarball (Linux/Mac) or zip file (Windows) from the GitHub releases page. Extract the archive and run the muonic executable as described below.
+
+## muonic setup for development
 
 ### prerequisites
 
@@ -41,13 +57,6 @@ To activate the venv in your current shell instead:
 source .venv/bin/activate
 muonic [OPTIONS] YOURINITIALS
 ```
-
-### preparing your computer to connect to the DAQ card
-
-The DAQ card uses a serial connection via the USB port. If muonic does not find the DAQ card even though it is connected to the computer, try adding the user that you use for login to the group dialout:
-
-`sudo adduser username dialout`.
-
 
 ### packaging and distribution muonic
 
