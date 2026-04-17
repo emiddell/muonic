@@ -937,7 +937,6 @@ class Application(QtWidgets.QMainWindow):
 
             time.sleep(0.5)
 
-            self.emit(QtCore.SIGNAL('lastWindowClosed()'))
             ev.accept()
         else:
             # don't close the application
