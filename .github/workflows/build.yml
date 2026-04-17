@@ -48,6 +48,6 @@ jobs:
           cd artifacts
           for dir in */; do zip -r "${dir%/}.zip" "$dir"; done
 
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: artifacts/*.zip
+      - run: gh release create "${{ github.ref_name }}" artifacts/*.zip --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
