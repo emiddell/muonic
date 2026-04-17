@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "muonic"
-version = "3.0.0"
-description = "Software to work with QNet DAQ cards. This is a TRUNK version"
+version = "3.1.0"
+description = "Software to work with QNet DAQ cards."
 readme = "README.md"
 license = {text = "GPLv3"}
 authors = [
@@ -14,6 +14,7 @@ authors = [
     {name = "Basho Kaminsky", email = "basho.kaminsky@desy.de"},
     {name = "Martin Ohmann", email = "martin@mohmann.de"},
     {name = "Hans-Peter Bretz", email = "hans-peter.bretz@desy.de"},
+    {name = "Eike Middell", email = "eike@middell.net"},
 ]
 keywords = ["QNET", "QuarkNET", "Fermilab", "DESY", "DAQ"]
 classifiers = [
