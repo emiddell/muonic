@@ -1,6 +1,7 @@
 """
 Provides helper classes and function needed by the gui
 """
+from os import path
 from matplotlib.pylab import rc
 
 from PyQt6 import QtGui, QtCore, QtWidgets
@@ -12,6 +13,9 @@ class HistoryAwareLineEdit(QtWidgets.QLineEdit):
 
     :param args: widget args
     """
+    keyDownPressed = QtCore.pyqtSignal()
+    keyUpPressed = QtCore.pyqtSignal()
+
     def __init__(self, *args):
         QtWidgets.QLineEdit.__init__(self, *args)
         self.history = []
@@ -25,8 +29,8 @@ class HistoryAwareLineEdit(QtWidgets.QLineEdit):
         :returns: bool
         """
         if event.type() == QtCore.QEvent.Type.KeyPress:
-            if event.key() == QtCore.Qt.Key_Down:
-                self.emit(QtCore.SIGNAL("keyDownPressed"))
+            if event.key() == QtCore.Qt.Key.Key_Down:
+                self.keyDownPressed.emit()
                 if self.hist_pointer < len(self.history) - 1:
                     self.hist_pointer += 1
                     self.setText(self.history[self.hist_pointer])
@@ -34,8 +38,8 @@ class HistoryAwareLineEdit(QtWidgets.QLineEdit):
                     self.setText('')
                     self.hist_pointer += 1
                 return True
-            if event.key() == QtCore.Qt.Key_Up:
-                self.emit(QtCore.SIGNAL("keyUpPressed"))
+            if event.key() == QtCore.Qt.Key.Key_Up:
+                self.keyUpPressed.emit()
                 if self.hist_pointer > 0:
                     self.hist_pointer -= 1
                     self.setText(self.history[self.hist_pointer])
