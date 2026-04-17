@@ -58,6 +58,11 @@ a = Analysis(
         # Exclude unused heavy packages to keep the bundle smaller
         'tkinter',
         '_tkinter',
+        # IPython is a dev/analysis tool, not needed by the GUI,
+        # and its import-time side effects (rich, colorama) interfere
+        # with argparse output and sys.argv in the bootloader context
+        'IPython',
+        'ipython',
     ],
     noarchive=False,
     optimize=0,
