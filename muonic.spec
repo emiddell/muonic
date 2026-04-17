@@ -8,10 +8,13 @@
 # The output will be in dist/muonic/
 
 import sys
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules, collect_dynamic_libs
 
 # Collect all matplotlib data files (includes backends, fonts, etc.)
 matplotlib_datas = collect_data_files('matplotlib')
+
+# Collect PyQt6 Qt6 DLLs — needed on Windows where they won't be found otherwise
+pyqt6_binaries = collect_dynamic_libs('PyQt6')
 
 platform_datas = [] if sys.platform == 'win32' else [
     ('bin/which_tty_daq', 'bin'),
@@ -24,7 +27,7 @@ platform_hiddenimports = (
 a = Analysis(
     ['bin/muonic'],
     pathex=["."],
-    binaries=[],
+    binaries=pyqt6_binaries,
     datas=[
         # Application data files (accessed via os.path.dirname(__file__))
         ('muonic/daq/simdaq.txt',            'muonic/daq'),
