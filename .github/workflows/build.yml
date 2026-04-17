@@ -30,14 +30,14 @@ jobs:
       - run: uv sync
       - run: uv run pyinstaller muonic.spec
 
-      - name: Archive
-        shell: bash
-        run: |
-          if [ "${{ matrix.archive_ext }}" = "tar.gz" ]; then
-            tar czf ${{ matrix.artifact }}.tar.gz -C dist muonic
-          else
-            cd dist && zip -r ../${{ matrix.artifact }}.zip muonic/
-          fi
+      - name: Archive (Unix)
+        if: runner.os != 'Windows'
+        run: tar czf ${{ matrix.artifact }}.tar.gz -C dist muonic
+
+      - name: Archive (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist\muonic -DestinationPath ${{ matrix.artifact }}.zip
 
       - uses: actions/upload-artifact@v7
         with:
