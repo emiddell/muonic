@@ -69,20 +69,13 @@ class BaseDAQConnection(abc.ABC):
                 return None
 
         while not connected:
-            try:
-                #dev = get_dev_path("which_tty_daq")
-                dev = get_device()
+            
+            dev = get_device()
 
-            except OSError:
-                # try using package script ../../bin/which_tty_daq
-                which_tty_daq = os.path.abspath(
-                        os.path.join(os.path.dirname(__file__), os.pardir,
-                                     os.pardir, 'bin', 'which_tty_daq'))
-
-                if not os.path.exists(which_tty_daq):
-                    raise OSError("Can not find binary which_tty_daq")
-
-                dev = get_dev_path(which_tty_daq)
+            if dev is None:
+                self.logger.error("Daq not found. Waiting 5 seconds")
+                sleep(5)
+                continue
 
             self.logger.info("Daq found at %s", dev)
             self.logger.info("trying to connect...")
