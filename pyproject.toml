@@ -22,15 +22,18 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Education",
     "Intended Audience :: Developers",
-    "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering :: Physics",
 ]
+requires-python = ">=3.13"
 dependencies = [
-    "matplotlib",
-    "numpy",
-    "pyserial",
-    "scipy",
+    "ipython>=9.10.0",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.2",
+    "pyinstaller>=6.19.0",
+    "PyQt6>=6.10.2",
+    "pyserial>=3.5",
+    "scipy>=1.17.0",
 ]
 
 [project.urls]

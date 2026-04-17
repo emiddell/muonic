@@ -1,82 +1,71 @@
-
-muonic - a python gui for QNET experiments
-================================================
+# muonic - a python gui for QNET experiments
 
 The muonic project provides an interface to communicate with QuarkNet DAQ cards and to perform simple analysis of the generated data.
 Its goal is to ensure easy and stable access to the QuarkNet cards and visualize some of the features of the cards. It is meant to be used in school projects, so it should be easy to use even by people who do not have lots LINUX backround or experience with scientific software. Automated data taking ensure no measured data is lost.
 
-License and terms of agreement
-----------------------------------
+## License and terms of agreement
 
 Muonic is distributed under the terms of GPL (GNU Public License). With the use of the software you accept the conditions of the GPL. This means also that the authors can not be made responsible for any damage of any kind to hard- or software.
 
 The Muonic logo is provided with a big thanks from The Particle Zoo http://www.particlezoo.net./
 
-muonic setup and installation
------------------------------------
+## muonic setup and installation
 
-Muonic consists of two main parts:
-1. the python package `muonic`
-2. a python executable
+### prerequisites
 
-###prerequisites
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if you haven't already:
 
-muonic needs the following packages to be installed (list may not be complete!)
+`curl -LsSf https://astral.sh/uv/install.sh | sh`
 
-* python-scipy
-* python-matplotlib
-* python-numpy
-* python-qt4
-* python-serial
-* python-future
+### installation
 
-###installation with pip
+Clone the repository and install muonic into an isolated virtual environment:
 
-Muonic can be installed using pip via
+```
+git clone https://github.com/NetzwerkTeilchenwelt/muonic_from_CosmicLab.git muonic
+cd muonic
 
-`pip install muonic`.
+uv venv --python 3.13
+uv sync
+```
 
-Pip will try to install all necessary dependencies as python packages. It can happen that all packages are already installed, e.g. as Ubuntu packages, but not in the same version as available in PyPI. In this case, pip will install the newest version from pypi. If you would like to avoid this, make sure that all dependencies are met and use
-`pip install --no-deps muonic`.
+`uv sync` creates a `.venv` in the project directory and installs muonic together with all its dependencies. The `muonic` executable is available inside the venv:
 
-###installation with the setup.py script
+```
+uv run muonic [OPTIONS] YOURINITIALS
+```
 
-Run the following command in the directory where you checked out the source code:
+To activate the venv in your current shell instead:
 
-`python setup.py install`
+```
+source .venv/bin/activate
+muonic [OPTIONS] YOURINITIALS
+```
 
-This will install the muonic package into your python site-packages directory and also the executuables `muonic` and `which_tty_daq` to your usr/bin directory. It also generates a new directory in your home dir: `$HOME/muonic_data`
-
-The use of python-virtualenv is recommended.
-
-###installing muonic without the setup script
-
-You just need the script `./bin/muonic` to the upper directory and rename it to `muonic.py`.
-You can do this by typing
-
-`mv bin/muonic muonic.py`
-
-while being in the muonic main directory.
-
-Afterwards you have to create the folder `muonic_data` in your home directory.
-
-`mkdir ~/muonic_data`
-
-###preparing your computer to connect to the DAQ card
+### preparing your computer to connect to the DAQ card
 
 The DAQ card uses a serial connection via the USB port. If muonic does not find the DAQ card even though it is connected to the computer, try adding the user that you use for login to the group dialout:
 
 `sudo adduser username dialout`.
 
 
+### packaging and distribution muonic
 
-How to use muonic
-========================
+PyInstaller is included as a project dependency. To build a bundle for distribution run:
 
-start muonic
-------------
+```
+uv run pyinstaller muonic.spec
+```
 
-If you have setup muonic via the provided setup.py script or if you have put the package somewhere in your PYTHONPATH, simple call from the terminal
+The resulting directory is placed in `dist/muonic`. It contains the application, the Python interpreter and all dependencies, so it runs on machines without a Python installation. Distribute this directory to the computers used in the experiments.
+
+
+## How to use muonic
+
+
+### start muonic
+
+If you have setup muonic as described above, simple call from the terminal
 
 ``muonic [OPTIONS] xy``
 
@@ -115,8 +104,7 @@ which gives you also an overview about the options::
 	define an output directory for the files written by muonic. Default is $HOME/muonic_data
 
 
-Saving files with muonic
-------------------------
+## Saving files with muonic
 
 All files which are saved by muonic are ASCII files. The filenames are as follows:
 
@@ -146,10 +134,10 @@ _For calculation of the LE and FE pulse times a TMC is used. It seems that for s
    Please keep this limited precision in mind when adding CPLD and TMC times._
 
 
-Performing measurements with muonic
------------------------------------
+## Performing measurements with muonic
 
-###Setting up the DAQ
+
+### Setting up the DAQ
 
 For DAQ setup it is recommended to use the 'settings' menu, although everything can also be setup via the command line in the DAQ output window (see below.)
 Muonic translates the chosen settings to the corresponding DAQ commands and sends them to the DAQ. So if you want to change things like the coincidence time window, you have to issue the corresponding DAQ command in the DAQ output window.
@@ -169,7 +157,7 @@ Two menu items are of interest here:
 **A proper calibration of the individual channels is the key to a successful measurement!**
 
 
-###Muon Rates
+### Muon Rates
 
 In the first tab a plot of the measured muon rates is displayed. A trigger rate is only shown if a coincidence condition is set.
 In the block on the right side of the tab, the average rates are displayed since the measurement start. Below you can find the number of counts for the individual channels. On the bottom right side is also the maximum rate of the measurement. The plot and the shown values can be reset by clicking on 'Restart'. The 'Stop' button can be used to temporarily hold the plot to have a better look at it.
@@ -178,7 +166,7 @@ In the block on the right side of the tab, the average rates are displayed since
 
 *Currently the plot shows only the last 200 seconds. If you want to have a longer time range, you can use the information which is automatically stored in the 'R' file (see above).*
 
-###Muon Lifetime
+### Muon Lifetime
 
 A lifetime measurement of muons can be performed here. A histogram of time differences between succeeding pulses in the same channel is shown. It can be fit with an exponential by clicking on 'Fit!'. The fit lifetime is then shown in the above right of the plot, for an estimate on the errors you have to look at the console.
 
@@ -188,21 +176,21 @@ The measurement can be activated with the check box. In the following popup wind
 
 **The error of the fit might be wrong!**
 
-###Muon Velocity
+### Muon Velocity
 
 In this tab the muon velocity can be measured. The measurement can be started with activating the check box. In the following popup window it has to be configured. The muon velocity widget will measure the signal times between two given channels which can be interpreted as the flight time of the muon from one detector plate to the other. The resulting histogram shows the distribution of flight times. The mean flight time can be calculated by using the fit button to fit a gaussian distribution.
 
 **The error of the fit might be wrong!**
 
-###Pulse Analyzer
+### Pulse Analyzer
 
 The pulse analyzer shows distributions of the pulse widths for each channel that is activated.
 
-###GPS Output
+### GPS Output
 
 In this tab you can read out the GPS information of the DAQ card. It requires a connected GPS antenna. The information are summarized on the bottom in a text box, from where they can be copied.
 
-###Raw DAQ data
+### Raw DAQ data
 
 The last tab of muonic displays the raw ASCII DAQ data.
 This can be saved to a file. If the DAQ status messages should be suppressed in that file, the option `-n` should be given at the start of muonic.

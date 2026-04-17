@@ -1,0 +1,13 @@
+name: muonic
+channels:
+  - conda-forge
+
+dependencies:
+  - ipython=9.10.0
+  - matplotlib=3.10.8
+  - numpy=2.4.2
+  - pyinstaller=6.19.0
+  - pyqt=6.10.2
+  - pyserial=3.5
+  - python=3.13
+  - scipy=1.17.0
