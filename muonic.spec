@@ -7,10 +7,19 @@
 #
 # The output will be in dist/muonic/
 
+import sys
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 # Collect all matplotlib data files (includes backends, fonts, etc.)
 matplotlib_datas = collect_data_files('matplotlib')
+
+platform_datas = [] if sys.platform == 'win32' else [
+    ('bin/which_tty_daq', 'bin'),
+]
+
+platform_hiddenimports = (
+    ['serial.serialwin32'] if sys.platform == 'win32' else ['serial.serialposix']
+)
 
 a = Analysis(
     ['bin/muonic'],
@@ -21,9 +30,7 @@ a = Analysis(
         ('muonic/daq/simdaq.txt',            'muonic/daq'),
         ('muonic/gui/daq_commands_help.txt', 'muonic/gui'),
         ('muonic/gui/muonic.xpm',            'muonic/gui'),
-        # Shell script used as fallback to detect the DAQ serial port
-        ('bin/which_tty_daq',                'bin'),
-    ] + matplotlib_datas,
+    ] + platform_datas + matplotlib_datas,
     hiddenimports=[
         # Matplotlib Qt6 backend (imported dynamically at runtime)
         'matplotlib.backends.backend_qtagg',
@@ -38,9 +45,8 @@ a = Analysis(
         # pyserial - may need explicit inclusion
         'serial',
         'serial.serialutil',
-        'serial.serialposix',
         'muonic',
-    ],
+    ] + platform_hiddenimports,
     hookspath=[],
     hooksconfig={
         "matplotlib": {
