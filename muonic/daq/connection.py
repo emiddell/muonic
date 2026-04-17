@@ -10,6 +10,7 @@ import queue
 import serial
 import subprocess
 from time import sleep
+import serial.tools.list_ports
 
 try:
     import zmq
@@ -59,10 +60,19 @@ class BaseDAQConnection(abc.ABC):
             tty = subprocess.Popen(
                     [script], stdout=subprocess.PIPE, text=True).communicate()[0]
             return "/dev/%s" % tty.rstrip('\n')
+            
+        def get_device():    
+            for port in serial.tools.list_ports.comports():
+                if (port.vid == 4292) and ( port.pid == 60000):
+                    return port.device
+            else:
+                return None
 
         while not connected:
             try:
-                dev = get_dev_path("which_tty_daq")
+                #dev = get_dev_path("which_tty_daq")
+                dev = get_device()
+
             except OSError:
                 # try using package script ../../bin/which_tty_daq
                 which_tty_daq = os.path.abspath(
@@ -141,7 +151,7 @@ class DAQConnection(BaseDAQConnection):
             try:
                 if self.serial_port.inWaiting():
                     while self.serial_port.inWaiting():
-                        self.out_queue.put(self.serial_port.readline().strip())
+                        self.out_queue.put(self.serial_port.readline().decode("ASCII").strip())
                     sleep_time = max(sleep_time / 2, min_sleep_time)
                 else:
                     sleep_time = min(1.5 * sleep_time, max_sleep_time)
@@ -166,16 +176,20 @@ class DAQConnection(BaseDAQConnection):
             try:
                 while self.in_queue.qsize():
                     try:
-                        self.serial_port.write(str(self.in_queue.get(0)) +
-                                               "\r")
+                        self.serial_port.write(
+                            (str(self.in_queue.get(0)) + "\r").encode("ASCII")
+                        )
                     except (queue.Empty, serial.SerialTimeoutException):
                         pass
             except NotImplementedError:
                 self.logger.debug("Running Mac version of muonic.")
                 while True:
                     try:
-                        self.serial_port.write(str(self.in_queue.get(
-                                timeout=0.01)) + "\r")
+                        self.serial_port.write(
+                            (str(self.in_queue.get(timeout=0.01)) + "\r").encode(
+                                "ASCII"
+                            )
+                        )
                     except (queue.Empty, serial.SerialTimeoutException):
                         pass
             sleep(0.1)
