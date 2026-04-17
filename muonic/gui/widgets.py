@@ -28,6 +28,7 @@ from muonic.analysis import VelocityTrigger, DecayTriggerThorough
 from muonic.util import rename_muonic_file, get_hours_from_duration
 from muonic.util import get_setting, WrappedFile
 
+import matplotlib.pyplot as plt
 
 class BaseWidget(QtWidgets.QWidget):
     """
@@ -528,7 +529,7 @@ class RateWidget(BaseWidget):
                              (measurement_type,
                               self.start_time.strftime("%a %d %b %Y %H:%M:%S UTC")))
         
-	self.data_file.write("\n")
+        self.data_file.write("\n")
 		
         for i, value in enumerate(["Single", "Twofold", "Threefold","Fourfold"]):
             if get_setting("coincidence%d" % i):
@@ -606,7 +607,7 @@ class RateWidget(BaseWidget):
                      self.show_trigger = True
         self.data_file.write("\n")
 
-	self.data_file.close()
+        self.data_file.close()
 
     def finish(self):
         """
@@ -673,11 +674,11 @@ class PulseAnalyzerWidget(BaseWidget):
 
         layout.addWidget(self.checkbox, 0, 0, 1, 2)
         for i in range(4):
-            cx = int(i/2 * 2 + 1)
-            cy = int(i%2)
+            c_row = int(i/2 * 2 + 1)
+            c_col = int(i%2)
 
-            layout.addWidget(self.pulse_width_canvases[i], cx, cy)
-            layout.addWidget(self.pulse_width_toolbars[i], cx+1, cy)
+            layout.addWidget(self.pulse_width_canvases[i], c_row, c_col)
+            layout.addWidget(self.pulse_width_toolbars[i], c_row+1, c_col)
 
     def calculate(self, pulses):
         """
@@ -795,9 +796,8 @@ class StatusWidget(BaseWidget):
         # setup daq stats
         for i in range(4):
             self.daq_stats['thresholds'].append(self.TEXT_UNSET)
-        
-        self.daq_stats['distances'].append(self.TEXT_UNSET)
-        self.daq_stats['active_channels'].append(False)
+            self.daq_stats['distances'].append(self.TEXT_UNSET)
+            self.daq_stats['active_channels'].append(False)
 
         self.daq_stats['coincidences'] = self.TEXT_UNSET
         self.daq_stats['coincidence_time'] = self.TEXT_UNSET
@@ -828,10 +828,9 @@ class StatusWidget(BaseWidget):
                     self.daq_stats['thresholds'][i])
             self.daq_widgets['thresholds'][i].setDisabled(True)
 
-            self.daq_widgets['distances'].append(QtGui.QLineEdit(self))
+            self.daq_widgets['distances'].append(QtWidgets.QLineEdit(self))
             self.daq_widgets['distances'][i].setReadOnly(True)
-            self.daq_widgets['distances'][i].setText(
-            self.daq_stats['distances'][i])
+            self.daq_widgets["distances"][i].setText(self.daq_stats["distances"][i])
             self.daq_widgets['distances'][i].setDisabled(True)
 
             self.daq_widgets['active_channels'].append(QtWidgets.QLineEdit(self))
@@ -865,11 +864,11 @@ class StatusWidget(BaseWidget):
         layout.addWidget(QtWidgets.QLabel("Active channels:"), 1, 0)
         layout.addWidget(QtWidgets.QLabel("Threshold:"), 2, 0)
         layout.addWidget(QtWidgets.QLabel("Distance:"), 3, 0)
-        layout.addWidget(QtWidgets.QLabel("Trigger condition:"), 3, 0)
+        layout.addWidget(QtWidgets.QLabel("Trigger condition:"), 4, 0)
         layout.addWidget(QtWidgets.QLabel("Time window for trigger condition:"),
-                         3, 3)
-        layout.addWidget(QtWidgets.QLabel("Veto:"), 4, 0)
-        layout.addWidget(QtWidgets.QLabel("Muon Decay Veto:"), 5, 0)
+                         4, 3)
+        layout.addWidget(QtWidgets.QLabel("Veto:"), 5, 0)
+        layout.addWidget(QtWidgets.QLabel("Muon Decay Veto:"), 6, 0)
 
         for i in range(4):
             layout.addWidget(self.daq_widgets['active_channels'][i], 1, i + 1)
@@ -878,26 +877,26 @@ class StatusWidget(BaseWidget):
 	
         layout.addWidget(self.daq_widgets['coincidences'], 4, 1, 1, 2)
         layout.addWidget(self.daq_widgets['coincidence_time'], 4, 4)
-        layout.addWidget(self.daq_widgets['veto'], 5, 1, 1, 4)
-        layout.addWidget(self.daq_widgets['decay_veto'], 6, 1, 1, 4)
+        layout.addWidget(self.daq_widgets['veto'], 6, 1, 1, 4)
+        layout.addWidget(self.daq_widgets['decay_veto'], 7, 1, 1, 4)
 
         # add muonic status widgets
-        layout.addWidget(QtWidgets.QLabel(self), 6, 0)
-        layout.addWidget(QtWidgets.QLabel("Status of Muonic:"), 7, 0)
-        layout.addWidget(QtWidgets.QLabel("Active measurements:"), 8, 0)
-        layout.addWidget(QtWidgets.QLabel("Measurement intervals:"), 8, 3)
-        layout.addWidget(QtWidgets.QLabel("Start parameter:"), 9, 0)
-        layout.addWidget(QtWidgets.QLabel("Currently opened files:"), 11, 0)
-        layout.addWidget(self.muonic_widgets['measurements'], 8, 1, 1, 2)
-        layout.addWidget(self.muonic_widgets['refresh_time'], 8, 4)
-        layout.addWidget(self.muonic_widgets['start_params'], 9, 1, 2, 4)
-        layout.addWidget(self.muonic_widgets['open_files'], 11, 1, 2, 4)
+        layout.addWidget(QtWidgets.QLabel(self), 7, 0)
+        layout.addWidget(QtWidgets.QLabel("Status of Muonic:"), 8, 0)
+        layout.addWidget(QtWidgets.QLabel("Active measurements:"), 9, 0)
+        layout.addWidget(QtWidgets.QLabel("Measurement intervals:"), 9, 3)
+        layout.addWidget(QtWidgets.QLabel("Start parameter:"), 10, 0)
+        layout.addWidget(QtWidgets.QLabel("Currently opened files:"), 12, 0)
+        layout.addWidget(self.muonic_widgets['measurements'], 9, 1, 1, 2)
+        layout.addWidget(self.muonic_widgets['refresh_time'], 9, 4)
+        layout.addWidget(self.muonic_widgets['start_params'], 10, 1, 2, 4)
+        layout.addWidget(self.muonic_widgets['open_files'], 12, 1, 2, 4)
 
         self.refresh_button = QtWidgets.QPushButton("Refresh")
         self.refresh_button.setDisabled(False)
         self.refresh_button.clicked.connect(self.on_refresh_clicked)
 
-        layout.addWidget(self.refresh_button, 13, 0, 1, 6)
+        layout.addWidget(self.refresh_button, 14, 0, 1, 6)
 
     def on_refresh_clicked(self):
         """
@@ -930,7 +929,7 @@ class StatusWidget(BaseWidget):
                 get_setting("active_ch%d" % i)
             self.daq_stats['thresholds'][i] = \
                 ("%d mV" % get_setting("threshold_ch%d" % i))
-        self.daq_stats['distances'][i] = \
+            self.daq_stats['distances'][i] = \
                 ("%d cm" % get_setting("distance_ch%d" % i))	
 
         if get_setting("veto"):
@@ -1002,13 +1001,13 @@ class StatusWidget(BaseWidget):
             self.daq_widgets['thresholds'][i].setDisabled(False)
             self.daq_widgets['thresholds'][i].setEnabled(True)
 
-        self.daq_widgets['distances'][i].setText(
-                    self.daq_stats['distances'][i])
-        self.daq_widgets['distances'][i].setDisabled(False)
-        self.daq_widgets['distances'][i].setEnabled(True)
+            self.daq_widgets['distances'][i].setText(
+                        self.daq_stats['distances'][i])
+            self.daq_widgets['distances'][i].setDisabled(False)
+            self.daq_widgets['distances'][i].setEnabled(True)
 
-        self.daq_widgets['active_channels'][i].setEnabled(
-                    self.daq_stats['active_channels'][i])
+            self.daq_widgets['active_channels'][i].setEnabled(
+                        self.daq_stats['active_channels'][i])
 
         for key in ['coincidences', 'coincidence_time', 'veto', 'decay_veto']:
             self.daq_widgets[key].setText(
@@ -1315,8 +1314,8 @@ class VelocityWidget(BaseWidget):
                                    self.mu_file.get_filename())
             except (OSError, IOError):
                 #pass
-                pit.cla()
-                pit.clf()                
+                plt.cla()
+                plt.clf()                
 
 class DecayWidget(BaseWidget):
     """

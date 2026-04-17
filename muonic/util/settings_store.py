@@ -27,7 +27,7 @@ _default_settings = {
     "threshold_ch0": 300,
     "threshold_ch1": 300,
     "threshold_ch2": 300,
-    "threshold_ch3": 300
+    "threshold_ch3": 300,
     "distance_ch0": 000,
     "distance_ch1": 000,
     "distance_ch2": 000,

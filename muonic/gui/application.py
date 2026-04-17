@@ -274,8 +274,7 @@ class Application(QtWidgets.QMainWindow):
 
         distances_action = QtGui.QAction('Distances', self)
         distances_action.setStatusTip('Set trigger distances')
-        self.connect(distances_action, QtCore.SIGNAL('triggered()'),
-                     self.distance_menu)
+        distances_action.triggered.connect(self.distance_menu)
 
         settings_menu.addAction(config_action)
         settings_menu.addAction(thresholds_action)
@@ -419,7 +418,7 @@ class Application(QtWidgets.QMainWindow):
         # show dialog
         dialog = DistanceDialog(distances)
 
-        if dialog.exec_() == 1:
+        if dialog.exec() == 1:
             commands = []
 
             # update distance config
