@@ -39,6 +39,10 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path dist\muonic -DestinationPath ${{ matrix.artifact }}.zip
 
+      - name: Install Qt system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libegl1 libgl1
+
       - name: Smoke test
         env:
           QT_QPA_PLATFORM: offscreen
