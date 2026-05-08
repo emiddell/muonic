@@ -414,11 +414,11 @@ class ScalarsCanvas(BasePlotCanvas):
             bottom, height = .35, .8
             right = left + width
             top = bottom + height
-            self.ax.text(0.5 * (left + right), 0.5 * (bottom + top),
+            self.ax.text(0.5, 0.5, #* (left + right), 0.5 * (bottom + top),
                          'Measuring...', horizontalalignment='center',
-                         verticalalignment='center', fontsize=56, color='red',
-                         fontweight="heavy", alpha=.8, rotation=30,
-                         transform=self.fig.transFigure)
+                         verticalalignment='center', fontsize=32, color='black',
+                         fontweight="heavy", alpha=.8, rotation=0,
+                         transform=self.ax.transAxes)
 
         self.fig.canvas.draw()
 

@@ -193,16 +193,16 @@ class Application(QtWidgets.QMainWindow):
 
         :returns: None
         """
-        self.add_widget("rate", "Muon Rates",
+        self.add_widget("rate", "Rates",
                         RateWidget(self.logger, self.rate_filename,
                                    parent=self))
-        self.add_widget("pulse", "Pulse Analyzer",
+        self.add_widget("pulse", "Pulses",
                         PulseAnalyzerWidget(self.logger, self.pulse_extractor,
                                             parent=self))
-        self.add_widget("decay", "Muon Decay",
+        self.add_widget("decay", "Lifetime",
                         DecayWidget(self.logger, self.decay_filename,
                                     self.pulse_extractor, parent=self))
-        self.add_widget("velocity", "Muon Velocity",
+        self.add_widget("velocity", "Velocity",
                         VelocityWidget(self.logger, self.velocity_filename,
                                        self.pulse_extractor, parent=self))
         self.add_widget("status", "Status",
