@@ -674,7 +674,7 @@ class PulseAnalyzerWidget(BaseWidget):
 
         layout.addWidget(self.checkbox, 0, 0, 1, 2)
         for i in range(4):
-            c_row = int(i/2 * 2 + 1)
+            c_row = int(i//2 * 2 + 1)
             c_col = int(i%2)
 
             layout.addWidget(self.pulse_width_canvases[i], c_row, c_col)

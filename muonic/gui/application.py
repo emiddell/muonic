@@ -598,7 +598,7 @@ class Application(QtWidgets.QMainWindow):
             self.daq.put("WC 02 %s" % gate_width_02)
 
             # adjust the update interval
-            self.widget_updater.start(time_window * 1000)
+            self.widget_updater.start(int(time_window) * 1000)
 
             self.logger.debug("Writing gate width WC 02 %s WC 03 %s" %
                               (gate_width_02, gate_width_03))
