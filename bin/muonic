@@ -56,7 +56,8 @@ def main(args, logger):
 
     # Set up the GUI part
     gui = Application(daq, logger, args)
-    gui.show()
+    gui.showMaximized()
+    #gui.show()
     root.exec()
 
 if __name__ == '__main__':
