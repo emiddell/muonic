@@ -82,6 +82,12 @@ jobs:
             mv "$f" "${name}-${{ github.ref_name }}.${suffix}"
           done
 
-      - run: gh release create "${{ github.ref_name }}" artifacts/* --generate-notes
+      - name: Create release
+        run: |
+          extra=""
+          case "${{ github.ref_name }}" in
+            *a*|*b*|*rc*) extra="--prerelease" ;;
+          esac
+          gh release create "${{ github.ref_name }}" artifacts/* --generate-notes $extra
         env:
           GH_TOKEN: ${{ github.token }}
